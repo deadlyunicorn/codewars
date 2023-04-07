@@ -1,0 +1,40 @@
+function scramble(str1, str2) {
+  
+  const set1=[...new Set(str1)];
+  const set2=[...new Set(str2)];
+  
+  let passed=true;
+  
+  for (let i=0;i<set2.length;i++){
+    if(!set1.includes(set2[i])){
+      passed=false;
+    }
+  };
+  
+  
+  if (passed){
+    const arr1=str1.split("").sort();
+    const arr2=str2.split("").sort();
+    
+    
+    
+    for(let i=0;i<set2.length;i++){
+      const currentLetter=set2[i];
+      
+      const currLetterSize1=arr1.reverse().indexOf(currentLetter)+arr1.indexOf(currentLetter);
+      let res1=arr1.length-currLetterSize1;
+      if (res1<0)res1=-res1;
+      
+      const currLetterSize2=arr2.reverse().indexOf(currentLetter)+arr2.indexOf(currentLetter);
+      let res2=arr2.length-currLetterSize2;
+      if (res2<0)res2=-res2;
+      
+      if(res1<res2){
+        return false 
+      }
+    }
+    return true;
+  }
+  else return false;
+  
+}
