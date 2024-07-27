@@ -27,25 +27,32 @@ String decomp(int value) {
   return resultList.join(" * ");
 }
 
-Map<int, List<int>> getPrimeFactorsOfNumbersUpTo(int number) {
+Map<int, List<int>> getPrimeFactorsOfNumbersUpTo(int maxNumber) {
   final Map<int, List<int>> dictionary = <int, List<int>>{};
 
-  for (int i = 2; i <= number; i++) {
-    for (int j = 2; j <= i; j++) {
-      final int resultingNumber = i * j;
-      if (dictionary[i] == null) {
-        dictionary[i] = <int>[i];
+  for (int currentNumber = 2; currentNumber <= maxNumber; currentNumber++) {
+    // Finding the numbers in which our current number is the 2nd factor.
+
+    int factor = 2;
+    do {
+final int resultingNumber = currentNumber * factor;
+      if (dictionary[currentNumber] == null) {
+        dictionary[currentNumber] = <int>[currentNumber];
       }
-      if (dictionary[j] == null) {
-        dictionary[j] = <int>[j];
+      if (dictionary[factor] == null) {
+        dictionary[factor] = <int>[factor];
       }
       if (dictionary[resultingNumber] == null) {
         dictionary[resultingNumber] = <int>[
-          ...dictionary[i]!,
-          ...dictionary[j]!,
+          ...dictionary[currentNumber]!,
+          ...dictionary[factor]!,
         ];
       }
+      factor ++;
     }
+    while (
+        factor <= currentNumber && factor * currentNumber <= maxNumber
+    ) ;
   }
 
   return dictionary;
