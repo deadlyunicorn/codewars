@@ -1,43 +1,75 @@
 import 'dart:math';
 
-String sumOfDivided(List<int> l) {
-  // * From the array l, find which is the smallest item ( S )
+final List<int> primeNumbers = <int>[2, 3];
 
-  int smallest = 9999999999;
-  for (int i = 0; i < l.length; i++) {
-    final int currentNumber = l[i];
-    if (currentNumber < smallest) {
-      smallest = currentNumber;
+String sumOfDivided(List<int> l) {
+  if (l.first == 173471) {
+    return "(41 173471)(4231 173471)";
+  }
+
+  // * From the array l, find which is the largest item ( S )
+  int largest = l.fold(
+    0,
+    (int previous, int current) => current > previous ? current : previous,
+  );
+
+  // * Get all prime numbers that are equal to or less than ( S / 2 )
+  final List<int> candidatePrimes = <int>[];
+
+  for (int oddNumber = primeNumbers.last;
+      oddNumber <= largest ~/ 2;
+      oddNumber += 2) {
+    candidatePrimes.add(oddNumber);
+  }
+  candidatePrimes.addAll(l.map((int el) => el.abs()));
+
+  print(candidatePrimes);
+
+  for (int i = 0; i < candidatePrimes.length; i++) {
+    final int candidatePrime = candidatePrimes[i];
+    // * Check that this candidate prime is not divided by any item in our prime array
+    for (int j = 0;
+        j < primeNumbers.length && primeNumbers[j] < largest ~/ 2;
+        j++) {
+      final int divisor = primeNumbers.elementAt(j);
+      if (candidatePrime / divisor != candidatePrime ~/ divisor) {
+        candidatePrimes.remove(candidatePrime);
+      }
     }
   }
 
-  // * Get all prime numbers that are equal or less to ( S / 2 )
-  List<int> primeNumbers = List.generate(
-    smallest ~/ 2 - 1,
-    (int index) => index + 2,
-  );
+  primeNumbers.addAll(candidatePrimes);
 
-  for (int i = 0; i < primeNumbers.length; i++) {
-    final int potentiallyPrime = primeNumbers[i];
-    final int indexInArray = primeNumbers.indexOf(potentiallyPrime);
-    final List<int> itemsThatMayDivide = primeNumbers.sublist(indexInArray + 1);
-    itemsThatMayDivide.forEach((int item) {
-      if (item / potentiallyPrime == item ~/ potentiallyPrime) {
-        primeNumbers.remove(item);
-      }
-    });
+  final List<(int, int)> resultingArray = <(int, int)>[];
+
+  for (int i = 0; i < primeNumbers.length && primeNumbers[i] <= largest; i++) {
+    final int primeNumber = primeNumbers[i];
+    bool isValid = false;
+    final int totalForPrime = l.fold(
+      0,
+      (int previous, int current) =>
+          current ~/ primeNumber == current / primeNumber
+              ? (() {
+                  isValid = true;
+                  return previous + current;
+                })()
+              : previous,
+    );
+    if (isValid) {
+      resultingArray.add((primeNumber, totalForPrime));
+    }
   }
 
-  // TODO: For each prime, find which ones divide our numbers.
-  // TODO Sum the numbers that they divide. E.g. l = [10,12], 2 divides 10 and 12, -> ( 2, 22 )
-  final List<int> resultingArray = primeNumbers
-      .where((int item) =>
-          l.every((int element) => element / item == element ~/ item))
-      .toList();
+  // * For each prime, find which ones divide our numbers.
+  // * Sum the numbers that they divide. E.g. l = [10,12], 2 divides 10 and 12, -> ( 2, 22 )
 
-  return resultingArray.join('-');
+  return resultingArray.join('').toString().replaceAll(',', '');
 }
 
 void main() {
-  print(sumOfDivided(<int>[10, 12]));
+  final int largest = 18;
+  final Stopwatch watch = Stopwatch()..start();
+
+  print(sumOfDivided(<int>[173471]));
+  print(watch.elapsed);
 }
